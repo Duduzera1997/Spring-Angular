@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="_template.xhtml">
+	<ui:define name="titulo">Novo Autor</ui:define>
+	<ui:define name="conteudo">
+		<h:form id="formAutor">
+			<p:messages globalOnly="true" />
+			<p:fieldset>
+				<legend>Dados do Autor</legend>
+				<h:panelGrid columns="3">
+					<p:outputLabel value="Nome:" for="nome" />
+					<p:inputText id="nome" value="#{autorBean.autor.nome}"
+						required="true" requiredMessage="Campo Obrigatório">
+						<f:validateLength maximum="40" />
+						<f:passThroughAttribute name="placeholder" value="Nome do Autor" />
+						<f:ajax event="blur" render="messageNome" />
+					</p:inputText>
+					<p:message for="nome" id="messageNome" />
+					<p:outputLabel value="E-mail: " for="email" />
+					<p:inputText id="email" value="#{autorBean.autor.email}"
+						required="true" requiredMessage="Campo Obrigatório">
+						<f:validateLength maximum="40" />
+						<f:passThroughAttribute name="placeholder" value="Nome do Autor" />
+						<f:ajax event="blur" render="messageNome" />
+					</p:inputText>
+					<p:message for="email" id="messageEmail" />
+					<h:commandButton value="Gravar" action="#{autorBean.gravar()}" />
+				</h:panelGrid>
+			</p:fieldset>
+		</h:form>
+		<h:form id="tabelaAutores">
+			<p:fieldset>
+				<legend>Autores Cadastrados</legend>
+
+
+				<p:dataList value="#{autorBean.getAutoresJPQL()}" var="autor"
+					type="unordered" itemType="none" paginator="true" rows="3"
+					styleClass="paginated">
+
+					<f:facet name="header"> Nome do Autor: </f:facet>
+
+					<p:commandLink update=":tabelaAutores:autorDetalhe"
+						oncomplete="PF('autorDialog').show()" title="Explorar"
+						styleClass="ui-icon ui-icon-search"
+						style="float:left;margin-right:10px">
+						<f:setPropertyActionListener value="#{autor}"
+							target="#{autorBean.autor}" />
+						<h:outputText value="#{autor.nome}, #{autor.email}" />
+					</p:commandLink>
+
+					<p:commandLink styleClass="ui-icon ui-icon-pencil"
+						style="float:left;margin-right:10px" title="Editar"
+						update=":formAutor">
+						<f:setPropertyActionListener value="#{autor}"
+							target="#{autorBean.autor}" />
+					</p:commandLink>
+
+					<p:commandLink action="#{autorBean.excluir(autor)}"
+						styleClass="ui-icon ui-icon-trash"
+						style="float:left;margin-right:10px" update='@form'
+						title="Excluir" />
+
+					<h:outputText value="#{autor.nome}" style="display:inline-block" />
+
+				</p:dataList>
+
+				<p:dialog header="Autor" widgetVar="autorDialog" modal="true"
+					showEffect="blind" hideEffect="explode" resizable="false">
+					<p:outputPanel id="autorDetalhe" style="text-align:center;">
+						<p:panelGrid columns="2" rendered="#{not empty autorBean.autor}"
+							columnClasses="label,value">
+
+							<h:outputText value="Id:" />
+							<h:outputText value="#{autorBean.autor.id}" />
+
+							<h:outputText value="Nome" />
+							<h:outputText value="#{autorBean.autor.nome}" />
+
+							<h:outputText value="E-mail" />
+							<h:outputText value="#{autorBean.autor.email}" />
+
+
+						</p:panelGrid>
+					</p:outputPanel>
+				</p:dialog>
+
+			</p:fieldset>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>
